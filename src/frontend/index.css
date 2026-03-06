@@ -1,0 +1,354 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 1rem;
+
+    /* ── Connectogram Dark Theme (OKLCH L C H) ── */
+    --background: 0.09 0.01 265;
+    --foreground: 0.96 0.005 265;
+    --card: 0.13 0.015 265;
+    --card-foreground: 0.96 0.005 265;
+    --popover: 0.13 0.015 265;
+    --popover-foreground: 0.96 0.005 265;
+    --primary: 0.65 0.22 295;
+    --primary-foreground: 0.98 0 0;
+    --secondary: 0.17 0.02 265;
+    --secondary-foreground: 0.96 0.005 265;
+    --muted: 0.17 0.02 265;
+    --muted-foreground: 0.56 0.01 265;
+    --accent: 0.6 0.19 230;
+    --accent-foreground: 0.98 0 0;
+    --destructive: 0.62 0.24 25;
+    --destructive-foreground: 0.98 0 0;
+    --border: 0.28 0.025 265;
+    --input: 0.2 0.02 265;
+    --ring: 0.65 0.22 295;
+
+    /* Chart */
+    --chart-1: 0.65 0.22 295;
+    --chart-2: 0.6 0.19 230;
+    --chart-3: 0.72 0.18 195;
+    --chart-4: 0.8 0.15 145;
+    --chart-5: 0.75 0.2 20;
+
+    /* Sidebar */
+    --sidebar: 0.11 0.012 265;
+    --sidebar-foreground: 0.96 0.005 265;
+    --sidebar-primary: 0.65 0.22 295;
+    --sidebar-primary-foreground: 0.98 0 0;
+    --sidebar-accent: 0.17 0.02 265;
+    --sidebar-accent-foreground: 0.96 0.005 265;
+    --sidebar-border: 0.22 0.02 265;
+    --sidebar-ring: 0.65 0.22 295;
+
+    /* Brand gradient stops */
+    --grad-purple: 0.58 0.24 298;
+    --grad-blue: 0.6 0.2 250;
+    --grad-cyan: 0.74 0.18 200;
+
+    /* Glow colors */
+    --glow-purple: oklch(0.58 0.24 298 / 0.4);
+    --glow-cyan: oklch(0.74 0.18 200 / 0.35);
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Outfit", "Sora", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(var(--border));
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(var(--primary) / 0.5);
+  }
+}
+
+@layer utilities {
+  /* Gradient text */
+  .text-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(var(--grad-purple)) 0%,
+      oklch(var(--grad-blue)) 50%,
+      oklch(var(--grad-cyan)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Gradient background */
+  .bg-gradient-brand {
+    background: linear-gradient(
+      135deg,
+      oklch(var(--grad-purple)) 0%,
+      oklch(var(--grad-blue)) 50%,
+      oklch(var(--grad-cyan)) 100%
+    );
+  }
+
+  /* Glassmorphism card */
+  .glass {
+    background: oklch(var(--card) / 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid oklch(var(--border) / 0.6);
+  }
+
+  .glass-hover {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .glass-hover:hover {
+    border-color: oklch(var(--primary) / 0.35);
+    box-shadow: 0 0 24px var(--glow-purple);
+    transform: translateY(-1px);
+  }
+
+  /* Story gradient ring */
+  .story-ring {
+    background: linear-gradient(
+      135deg,
+      oklch(var(--grad-purple)),
+      oklch(var(--grad-blue)),
+      oklch(var(--grad-cyan))
+    );
+  }
+
+  /* Glow effects */
+  .glow-purple {
+    box-shadow: 0 0 20px var(--glow-purple);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 20px var(--glow-cyan);
+  }
+
+  /* Button gradient */
+  .btn-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(var(--grad-purple)),
+      oklch(var(--grad-blue))
+    );
+    color: white;
+    border: none;
+    transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-gradient:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px var(--glow-purple);
+  }
+
+  .btn-gradient:active {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ICP verified badge */
+  .verified-badge {
+    background: linear-gradient(
+      135deg,
+      oklch(var(--grad-purple)),
+      oklch(var(--grad-cyan))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Mesh background */
+  .mesh-bg {
+    background: 
+      radial-gradient(ellipse at 20% 20%, oklch(0.58 0.24 298 / 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, oklch(0.6 0.2 250 / 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, oklch(0.74 0.18 200 / 0.06) 0%, transparent 60%),
+      oklch(var(--background));
+  }
+
+  /* Hide scrollbar visually but keep scrollable */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* ── CGRAM Token styles ── */
+  .cgram-text {
+    background: linear-gradient(
+      135deg,
+      oklch(0.82 0.18 85) 0%,
+      oklch(0.72 0.22 60) 50%,
+      oklch(0.62 0.22 45) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .cgram-float-reward {
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: cgram-float 1.2s ease-out forwards;
+    z-index: 50;
+  }
+
+  /* ── Certificate styles ── */
+  .certificate-outer {
+    background: linear-gradient(
+      135deg,
+      oklch(0.58 0.24 298) 0%,
+      oklch(0.6 0.2 250) 40%,
+      oklch(0.74 0.18 200) 100%
+    );
+  }
+
+  .certificate-header {
+    background: linear-gradient(
+      135deg,
+      oklch(0.15 0.04 298 / 0.95) 0%,
+      oklch(0.13 0.02 265 / 0.95) 100%
+    );
+    border-bottom: 1px solid oklch(0.58 0.24 298 / 0.25);
+  }
+
+  .certificate-shield-wrap {
+    background: linear-gradient(
+      135deg,
+      oklch(0.58 0.24 298),
+      oklch(0.74 0.18 200)
+    );
+  }
+
+  .certificate-verified-pill {
+    background: oklch(0.35 0.1 160 / 0.35);
+    border: 1px solid oklch(0.72 0.18 160 / 0.4);
+  }
+
+  .certificate-field {
+    background: oklch(0.13 0.015 265 / 0.7);
+    border: 1px solid oklch(0.28 0.025 265 / 0.5);
+  }
+
+  .certificate-hash-text {
+    background: linear-gradient(
+      135deg,
+      oklch(0.74 0.18 200) 0%,
+      oklch(0.7 0.2 220) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .certificate-footer {
+    background: oklch(0.08 0.01 265 / 0.8);
+    border-top: 1px solid oklch(0.28 0.025 265 / 0.4);
+  }
+
+  .certificate-pulse-dot {
+    animation: cert-pulse 2s ease-in-out infinite;
+  }
+
+  /* ── Blockchain stats bar ── */
+  .stats-bar-glass {
+    background: oklch(0.13 0.015 265 / 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid oklch(0.58 0.24 298 / 0.2);
+  }
+
+  .stats-number {
+    background: linear-gradient(
+      135deg,
+      oklch(var(--grad-purple)) 0%,
+      oklch(var(--grad-cyan)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ── Certificate badge pill on post image ── */
+  .certificate-badge-pill {
+    background: oklch(0.10 0.015 265 / 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid oklch(0.58 0.24 298 / 0.4);
+  }
+
+  .certificate-badge-pill:hover {
+    background: oklch(0.13 0.02 265 / 0.9);
+    border-color: oklch(0.58 0.24 298 / 0.7);
+  }
+
+  .cert-badge-dot {
+    animation: cert-pulse 2s ease-in-out infinite;
+  }
+
+  /* ── Verified creator badge ── */
+  .verified-creator-badge {
+    background: linear-gradient(
+      135deg,
+      oklch(0.58 0.24 298) 0%,
+      oklch(0.6 0.2 250) 50%,
+      oklch(0.65 0.19 230) 100%
+    );
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+}
+
+@keyframes cgram-float {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-40px);
+  }
+}
+
+@keyframes cert-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
