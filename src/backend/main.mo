@@ -549,4 +549,28 @@ actor {
     // Public query - anyone can view trending hashtags
     ["connectogram", "motoko", "web3", "icp"];
   };
+
+  // EXTENSIONS
+
+  public query ({ caller }) func getLikeCount(postId : Nat) : async Nat {
+    switch (postLikes.get(postId)) {
+      case (null) { 0 };
+      case (?set) { set.size() };
+    };
+  };
+
+  public query ({ caller }) func getPostLikes(postId : Nat) : async [Principal] {
+    switch (postLikes.get(postId)) {
+      case (null) { [] };
+      case (?set) { set.toArray() };
+    };
+  };
+
+  public query ({ caller }) func getAllStories() : async [Story] {
+    let now = Time.now();
+    let validStories = stories.values().filter(
+      func(story) { now - story.createdAt < 24 * 60 * 60 * 1_000_000_000 }
+    ).toArray();
+    validStories.sort(Story.compareByNewestFirst);
+  };
 };

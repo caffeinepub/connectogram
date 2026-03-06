@@ -10,13 +10,15 @@ import {
   Send,
   Share2,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Post, UserProfile } from "../backend.d";
 import { useAuth } from "../contexts/AuthContext";
 import {
   useAddComment,
   useGetComments,
+  useGetLikeCount,
+  useGetPostLikes,
   useLikePost,
   useUnlikePost,
 } from "../hooks/useQueries";
@@ -44,15 +46,28 @@ function formatTime(timestamp: bigint): string {
 }
 
 export function PostCard({ post, authorProfile, index = 1 }: PostCardProps) {
-  const { isAuthenticated } = useAuth();
-  const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(
-    Math.floor(Math.random() * 200) + 10,
-  );
+  const { isAuthenticated, principal } = useAuth();
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [certOpen, setCertOpen] = useState(false);
   const [showCgramReward, setShowCgramReward] = useState(false);
+
+  const { data: likeData } = useGetLikeCount(post.id);
+  const { data: postLikes } = useGetPostLikes(post.id);
+
+  const [liked, setLiked] = useState(false);
+  const [likeOffset, setLikeOffset] = useState(0);
+  const initializedRef = useRef(false);
+
+  // Sync liked state once when postLikes data first arrives
+  useEffect(() => {
+    if (!initializedRef.current && postLikes !== undefined) {
+      initializedRef.current = true;
+      const alreadyLiked =
+        !!principal && postLikes.some((p) => p.toString() === principal);
+      setLiked(alreadyLiked);
+    }
+  }, [postLikes, principal]);
 
   const likePost = useLikePost();
   const unlikePost = useUnlikePost();
@@ -73,18 +88,27 @@ export function PostCard({ post, authorProfile, index = 1 }: PostCardProps) {
     }
     try {
       if (liked) {
-        await unlikePost.mutateAsync(post.id);
+        // Optimistic UI: immediately decrement and unset liked
         setLiked(false);
-        setLikeCount((c) => c - 1);
+        setLikeOffset((o) => o - 1);
+        await unlikePost.mutateAsync(post.id);
+        // After mutation, reset offset so real data is used
+        setLikeOffset(0);
       } else {
-        await likePost.mutateAsync(post.id);
+        // Optimistic UI: immediately increment and set liked
         setLiked(true);
-        setLikeCount((c) => c + 1);
+        setLikeOffset((o) => o + 1);
+        await likePost.mutateAsync(post.id);
+        // After mutation, reset offset so real data is used
+        setLikeOffset(0);
         // Show CGRAM reward float
         setShowCgramReward(true);
         setTimeout(() => setShowCgramReward(false), 1300);
       }
     } catch {
+      // Revert optimistic update
+      setLiked(!liked);
+      setLikeOffset(0);
       toast.error("Failed to update like");
     }
   };
@@ -199,7 +223,9 @@ export function PostCard({ post, authorProfile, index = 1 }: PostCardProps) {
                   <Heart
                     className={`w-5 h-5 transition-all ${liked ? "fill-red-400" : ""}`}
                   />
-                  <span className="text-sm font-medium">{likeCount}</span>
+                  <span className="text-sm font-medium">
+                    {Number(likeData ?? 0n) + likeOffset}
+                  </span>
                 </button>
               </div>
               <button

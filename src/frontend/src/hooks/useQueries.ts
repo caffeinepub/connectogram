@@ -80,6 +80,32 @@ export function useGetTrendingHashtags() {
   });
 }
 
+export function useGetLikeCount(postId: bigint) {
+  const { actor, isFetching } = useActor();
+  return useQuery<bigint>({
+    queryKey: ["like-count", postId.toString()],
+    queryFn: async () => {
+      if (!actor) return 0n;
+      return actor.getLikeCount(postId);
+    },
+    enabled: !!actor && !isFetching,
+    staleTime: 10_000,
+  });
+}
+
+export function useGetPostLikes(postId: bigint) {
+  const { actor, isFetching } = useActor();
+  return useQuery<Principal[]>({
+    queryKey: ["post-likes", postId.toString()],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getPostLikes(postId);
+    },
+    enabled: !!actor && !isFetching,
+    staleTime: 10_000,
+  });
+}
+
 export function useLikePost() {
   const { actor } = useActor();
   const qc = useQueryClient();
@@ -91,6 +117,8 @@ export function useLikePost() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["posts"] });
       void qc.invalidateQueries({ queryKey: ["explore-posts"] });
+      void qc.invalidateQueries({ queryKey: ["like-count"] });
+      void qc.invalidateQueries({ queryKey: ["post-likes"] });
     },
   });
 }
@@ -106,6 +134,8 @@ export function useUnlikePost() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["posts"] });
       void qc.invalidateQueries({ queryKey: ["explore-posts"] });
+      void qc.invalidateQueries({ queryKey: ["like-count"] });
+      void qc.invalidateQueries({ queryKey: ["post-likes"] });
     },
   });
 }
@@ -149,6 +179,19 @@ export function useCreatePost() {
 
 // ── Stories ────────────────────────────────────────────────────────────────
 
+export function useGetAllStories() {
+  const { actor, isFetching } = useActor();
+  return useQuery<Story[]>({
+    queryKey: ["all-stories"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllStories();
+    },
+    enabled: !!actor && !isFetching,
+    staleTime: 30_000,
+  });
+}
+
 export function useGetActiveStories(principal: Principal | null) {
   const { actor, isFetching } = useActor();
   return useQuery<Story[]>({
@@ -179,6 +222,7 @@ export function useCreateStory() {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["stories"] });
+      void qc.invalidateQueries({ queryKey: ["all-stories"] });
     },
   });
 }

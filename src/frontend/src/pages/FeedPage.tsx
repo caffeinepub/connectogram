@@ -175,7 +175,7 @@ export function FeedPage() {
 
         {/* Stories */}
         <div className="glass rounded-2xl p-4 border border-border/40">
-          <StoriesRow isLoading={isLoading} />
+          <StoriesRow />
         </div>
 
         {/* Feed */}

@@ -175,6 +175,7 @@ export interface backendInterface {
     createStory(image: ExternalBlob, text: string): Promise<bigint>;
     followUser(user: Principal): Promise<void>;
     getActiveStories(user: Principal): Promise<Array<Story>>;
+    getAllStories(): Promise<Array<Story>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getComments(postId: bigint): Promise<Array<Comment>>;
@@ -182,9 +183,11 @@ export interface backendInterface {
     getExplorePosts(): Promise<Array<Post>>;
     getFollowers(user: Principal): Promise<Array<Principal>>;
     getFollowing(user: Principal): Promise<Array<Principal>>;
+    getLikeCount(postId: bigint): Promise<bigint>;
     getMessages(user: Principal): Promise<Array<Message>>;
     getNotifications(): Promise<Array<Notification>>;
     getPost(postId: bigint): Promise<Post>;
+    getPostLikes(postId: bigint): Promise<Array<Principal>>;
     getPosts(): Promise<Array<Post>>;
     getPostsByUser(user: Principal): Promise<Array<Post>>;
     getTrendingHashtags(): Promise<Array<string>>;
@@ -399,6 +402,20 @@ export class Backend implements backendInterface {
             return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getAllStories(): Promise<Array<Story>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllStories();
+                return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllStories();
+            return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getCallerUserProfile(): Promise<UserProfile | null> {
         if (this.processError) {
             try {
@@ -497,6 +514,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getLikeCount(arg0: bigint): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getLikeCount(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getLikeCount(arg0);
+            return result;
+        }
+    }
     async getMessages(arg0: Principal): Promise<Array<Message>> {
         if (this.processError) {
             try {
@@ -537,6 +568,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getPost(arg0);
             return from_candid_Post_n24(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getPostLikes(arg0: bigint): Promise<Array<Principal>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPostLikes(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPostLikes(arg0);
+            return result;
         }
     }
     async getPosts(): Promise<Array<Post>> {

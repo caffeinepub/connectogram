@@ -82,6 +82,7 @@ export interface backendInterface {
     createStory(image: ExternalBlob, text: string): Promise<bigint>;
     followUser(user: Principal): Promise<void>;
     getActiveStories(user: Principal): Promise<Array<Story>>;
+    getAllStories(): Promise<Array<Story>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getComments(postId: bigint): Promise<Array<Comment>>;
@@ -89,9 +90,11 @@ export interface backendInterface {
     getExplorePosts(): Promise<Array<Post>>;
     getFollowers(user: Principal): Promise<Array<Principal>>;
     getFollowing(user: Principal): Promise<Array<Principal>>;
+    getLikeCount(postId: bigint): Promise<bigint>;
     getMessages(user: Principal): Promise<Array<Message>>;
     getNotifications(): Promise<Array<Notification>>;
     getPost(postId: bigint): Promise<Post>;
+    getPostLikes(postId: bigint): Promise<Array<Principal>>;
     getPosts(): Promise<Array<Post>>;
     getPostsByUser(user: Principal): Promise<Array<Post>>;
     getTrendingHashtags(): Promise<Array<string>>;

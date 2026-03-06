@@ -1,41 +1,39 @@
 # Connectogram
 
 ## Current State
-- Full social media backend in Motoko: users, posts, stories, follows, likes, comments, messages, notifications
-- Internet Identity authentication
-- Blob storage for media
-- Authorization with role-based access control
-- Frontend with dark theme, glassmorphism UI, feed, explore, messaging, notifications pages
+- Full social media app with posts, feed, explore, profiles, messaging, notifications
+- PostCard shows like counts initialized with `Math.random()` (fake random numbers), not real data
+- StoriesRow uses a hardcoded `SAMPLE_STORIES` array with fake users -- no real backend integration
+- Backend has `likePost`/`unlikePost` but no `getLikeCount` or `getPostLikes` query
+- Stories backend exists (`createStory`, `getActiveStories`) but is not wired to the UI
+- "Add Story" button in StoriesRow does nothing
 
 ## Requested Changes (Diff)
 
 ### Add
-- **On-chain Post Ownership Certificates**: Each post gets a tamper-proof certificate with creator principal, post hash, and issue timestamp stored permanently on-chain. Users can view and share their certificate.
-- **Creator Verification Badges**: Admin or self-attestation flow where users can apply for a verified badge. Badge stored on-chain with verification timestamp and type (e.g. `#creator`, `#brand`, `#official`). Badge visible on profile and posts.
-- **Token-Based Engagement System (CGRAM tokens)**: Users earn CGRAM tokens for posting, liking, commenting, following, and receiving likes. Token balances stored on-chain per principal. Token ledger with transfer history. Token balance shown on profile.
-- **Post Like Count query**: Public query to get like count per post (needed for token reward triggers).
+- `getLikeCount(postId)` query to Motoko backend returning real like count per post
+- `getPostLikes(postId)` query returning Set of principals who liked (to check if caller liked it)
+- Story creation flow: clicking "Your Story" opens a dialog to upload an image + optional text, then calls `createStory`
+- Story viewing: fetch real stories from all users the current user follows; show their story bubbles
+- `useGetLikeCount` hook in useQueries.ts
+- `useGetAllStories` hook to fetch stories for feed (from all registered users, or a public endpoint)
 
 ### Modify
-- `createPost` -- also issues an ownership certificate and awards CGRAM tokens to poster
-- `likePost` -- also awards CGRAM tokens to liker and to post creator
-- `addComment` -- also awards CGRAM tokens to commenter
-- `followUser` -- also awards CGRAM tokens to the follower
-- `registerUser` -- awards welcome CGRAM tokens on first registration
-- User type -- add `isVerified`, `verificationBadge` fields
+- `PostCard`: replace `Math.random()` initial like count with real data fetched from `getLikeCount`
+- `PostCard`: initialize `liked` state based on whether caller's principal is in post's likes set
+- `StoriesRow`: remove `SAMPLE_STORIES` hardcoded data; wire to real backend stories
+- `StoriesRow`: "Your Story" button opens story creation modal
+- Motoko: add `getLikeCount` and `getPostLikes` public query functions
+- Motoko: add `getAllStories` public query that returns all active stories across all users
 
 ### Remove
-- Nothing removed
+- `Math.random()` fake like count initialization in PostCard
+- Hardcoded `SAMPLE_STORIES` array in StoriesRow
 
 ## Implementation Plan
-1. Add `OwnershipCertificate` type with postId, creator, issuedAt, certificateHash
-2. Add `VerificationBadge` type with badgeType (#creator | #brand | #official), issuedAt, issuedBy
-3. Add `TokenLedgerEntry` type with from, to, amount, reason, timestamp
-4. Add state maps: `certificates`, `verificationBadges`, `tokenBalances`, `tokenLedger`
-5. Add `getCertificate(postId)`, `verifyCertificateExists(postId)` queries
-6. Add `applyForVerification()` shared (self-apply, stored pending), `grantVerification(user, badgeType)` admin-only
-7. Add `getTokenBalance(user)` query, `getTokenLedger(user)` query
-8. Internal helper `awardTokens(to, amount, reason)` 
-9. Wire token awards into createPost, likePost, addComment, followUser, registerUser
-10. Wire certificate issuance into createPost
-11. Add `getLikeCount(postId)` public query
-12. Frontend: show certificate badge on posts, show token balance on profile, show verified badge on usernames, add certificate viewer modal
+1. Update `main.mo` to add `getLikeCount(postId)`, `getPostLikes(postId)`, and `getAllStories()` query functions
+2. Regenerate `backend.d.ts` bindings
+3. Add `useGetLikeCount`, `useGetPostLikes`, `useGetAllStories` hooks to `useQueries.ts`
+4. Update `PostCard` to use real like count and liked state from backend
+5. Rebuild `StoriesRow` to: fetch all active stories, render real user bubbles, add story creation modal
+6. Validate and deploy
