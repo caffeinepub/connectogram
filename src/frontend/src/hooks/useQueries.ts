@@ -438,3 +438,31 @@ export function useMarkNotificationsRead() {
     },
   });
 }
+
+// ── User Search ────────────────────────────────────────────────────────────
+
+export function useGetAllUsers() {
+  const { actor, isFetching } = useActor();
+  return useQuery<User[]>({
+    queryKey: ["all-users"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllUsers();
+    },
+    enabled: !!actor && !isFetching,
+    staleTime: 60_000,
+  });
+}
+
+export function useSearchUsers(query: string) {
+  const { actor, isFetching } = useActor();
+  return useQuery<User[]>({
+    queryKey: ["search-users", query],
+    queryFn: async () => {
+      if (!actor || !query.trim()) return [];
+      return actor.searchUsers(query.trim());
+    },
+    enabled: !!actor && !isFetching && query.trim().length > 0,
+    staleTime: 15_000,
+  });
+}

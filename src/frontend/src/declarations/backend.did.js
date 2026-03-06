@@ -33,6 +33,12 @@ export const Story = IDL.Record({
   'text' : IDL.Text,
   'image' : ExternalBlob,
 });
+export const User = IDL.Record({
+  'id' : IDL.Principal,
+  'bio' : IDL.Text,
+  'username' : IDL.Text,
+  'profilePicture' : IDL.Opt(ExternalBlob),
+});
 export const UserProfile = IDL.Record({
   'bio' : IDL.Text,
   'username' : IDL.Text,
@@ -72,12 +78,6 @@ export const Notification = IDL.Record({
   'timestamp' : Time,
   'fromUser' : IDL.Principal,
   'postId' : IDL.Opt(IDL.Nat),
-});
-export const User = IDL.Record({
-  'id' : IDL.Principal,
-  'bio' : IDL.Text,
-  'username' : IDL.Text,
-  'profilePicture' : IDL.Opt(ExternalBlob),
 });
 
 export const idlService = IDL.Service({
@@ -133,6 +133,7 @@ export const idlService = IDL.Service({
   'followUser' : IDL.Func([IDL.Principal], [], []),
   'getActiveStories' : IDL.Func([IDL.Principal], [IDL.Vec(Story)], ['query']),
   'getAllStories' : IDL.Func([], [IDL.Vec(Story)], ['query']),
+  'getAllUsers' : IDL.Func([], [IDL.Vec(User)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getComments' : IDL.Func([IDL.Nat], [IDL.Vec(Comment)], ['query']),
@@ -171,6 +172,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'searchUsers' : IDL.Func([IDL.Text], [IDL.Vec(User)], ['query']),
   'sendMessage' : IDL.Func([IDL.Principal, IDL.Text], [], []),
   'unfollowUser' : IDL.Func([IDL.Principal], [], []),
   'unlikePost' : IDL.Func([IDL.Nat], [], []),
@@ -204,6 +206,12 @@ export const idlFactory = ({ IDL }) => {
     'createdAt' : Time,
     'text' : IDL.Text,
     'image' : ExternalBlob,
+  });
+  const User = IDL.Record({
+    'id' : IDL.Principal,
+    'bio' : IDL.Text,
+    'username' : IDL.Text,
+    'profilePicture' : IDL.Opt(ExternalBlob),
   });
   const UserProfile = IDL.Record({
     'bio' : IDL.Text,
@@ -244,12 +252,6 @@ export const idlFactory = ({ IDL }) => {
     'timestamp' : Time,
     'fromUser' : IDL.Principal,
     'postId' : IDL.Opt(IDL.Nat),
-  });
-  const User = IDL.Record({
-    'id' : IDL.Principal,
-    'bio' : IDL.Text,
-    'username' : IDL.Text,
-    'profilePicture' : IDL.Opt(ExternalBlob),
   });
   
   return IDL.Service({
@@ -305,6 +307,7 @@ export const idlFactory = ({ IDL }) => {
     'followUser' : IDL.Func([IDL.Principal], [], []),
     'getActiveStories' : IDL.Func([IDL.Principal], [IDL.Vec(Story)], ['query']),
     'getAllStories' : IDL.Func([], [IDL.Vec(Story)], ['query']),
+    'getAllUsers' : IDL.Func([], [IDL.Vec(User)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getComments' : IDL.Func([IDL.Nat], [IDL.Vec(Comment)], ['query']),
@@ -343,6 +346,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'searchUsers' : IDL.Func([IDL.Text], [IDL.Vec(User)], ['query']),
     'sendMessage' : IDL.Func([IDL.Principal, IDL.Text], [], []),
     'unfollowUser' : IDL.Func([IDL.Principal], [], []),
     'unlikePost' : IDL.Func([IDL.Nat], [], []),

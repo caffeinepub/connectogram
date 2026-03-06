@@ -11,66 +11,6 @@ import { AppLayout } from "../components/layout/AppLayout";
 import { useAuth } from "../contexts/AuthContext";
 import { useGetPosts, useGetUserProfile } from "../hooks/useQueries";
 
-// Sample posts for demo when no backend data
-const SAMPLE_POSTS = [
-  {
-    id: 1n,
-    creator: {
-      toString: () => "2vxsx-fae",
-      isAnonymous: () => false,
-    } as unknown as Principal,
-    caption:
-      "Tokyo nights never disappoint — the neon reflections on rainy streets are pure magic ✨",
-    hashtags: ["photography", "tokyo", "travel", "nightlife"],
-    timestamp: BigInt(Date.now() - 2 * 60 * 60 * 1000) * 1_000_000n,
-    image: {
-      getDirectURL: () => "/assets/generated/post-tokyo-night.dim_800x600.jpg",
-    } as any,
-  },
-  {
-    id: 2n,
-    creator: {
-      toString: () => "aaaaa-aa",
-      isAnonymous: () => false,
-    } as unknown as Principal,
-    caption:
-      "New NFT artwork series going live soon 🔮 Each piece represents a node in the network of consciousness",
-    hashtags: ["nft", "web3", "digitalart", "blockchain"],
-    timestamp: BigInt(Date.now() - 5 * 60 * 60 * 1000) * 1_000_000n,
-    image: {
-      getDirectURL: () =>
-        "/assets/generated/post-blockchain-art.dim_800x600.jpg",
-    } as any,
-  },
-  {
-    id: 3n,
-    creator: {
-      toString: () => "rrkah-fqaaa",
-      isAnonymous: () => false,
-    } as unknown as Principal,
-    caption: "My setup this year 💻 Clean, minimal, optimized for flow state",
-    hashtags: ["workspace", "productivity", "developer", "setup"],
-    timestamp: BigInt(Date.now() - 12 * 60 * 60 * 1000) * 1_000_000n,
-    image: {
-      getDirectURL: () => "/assets/generated/post-workspace.dim_800x600.jpg",
-    } as any,
-  },
-  {
-    id: 4n,
-    creator: {
-      toString: () => "rdmx6-jaaaa",
-      isAnonymous: () => false,
-    } as unknown as Principal,
-    caption:
-      "Bioluminescent forest photoshoot — nature has the best VFX department 🌿",
-    hashtags: ["nature", "photography", "bioluminescence", "magical"],
-    timestamp: BigInt(Date.now() - 18 * 60 * 60 * 1000) * 1_000_000n,
-    image: {
-      getDirectURL: () => "/assets/generated/post-forest-glow.dim_800x600.jpg",
-    } as any,
-  },
-] as Post[];
-
 function BlockchainStatsBar({ postCount }: { postCount: number }) {
   const cgram = postCount * 10 + 1200;
   return (
@@ -152,7 +92,7 @@ export function FeedPage() {
 
   if (!isAuthenticated && !isInitializing) return null;
 
-  const displayPosts = posts && posts.length > 0 ? posts : SAMPLE_POSTS;
+  const displayPosts = posts ?? [];
 
   return (
     <AppLayout>

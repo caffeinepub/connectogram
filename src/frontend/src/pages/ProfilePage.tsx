@@ -43,27 +43,6 @@ import {
   useUpdateUser,
 } from "../hooks/useQueries";
 
-const SAMPLE_POSTS_BY_USER = [
-  {
-    id: 1n,
-    image: "/assets/generated/post-tokyo-night.dim_800x600.jpg",
-    caption: "Tokyo nights ✨",
-    hashtags: ["photography", "tokyo"],
-  },
-  {
-    id: 2n,
-    image: "/assets/generated/post-blockchain-art.dim_800x600.jpg",
-    caption: "NFT art 🎨",
-    hashtags: ["nft", "web3"],
-  },
-  {
-    id: 3n,
-    image: "/assets/generated/post-architecture.dim_800x600.jpg",
-    caption: "Minimal arch 🏛️",
-    hashtags: ["architecture", "minimal"],
-  },
-];
-
 export function ProfilePage() {
   const { principalId } = useParams({ from: "/profile/$principalId" });
   const navigate = useNavigate();
@@ -245,7 +224,7 @@ export function ProfilePage() {
               <div className="flex flex-wrap gap-4 mb-4 items-end">
                 <div className="text-center">
                   <div className="font-display font-bold text-foreground text-xl">
-                    {displayPosts?.length ?? SAMPLE_POSTS_BY_USER.length}
+                    {displayPosts?.length ?? 0}
                   </div>
                   <div className="text-xs text-muted-foreground">Posts</div>
                 </div>
@@ -265,8 +244,7 @@ export function ProfilePage() {
                 <div className="border-l border-border/40 pl-4 ml-1">
                   <CgramBalance
                     balance={
-                      (displayPosts?.length ?? SAMPLE_POSTS_BY_USER.length) *
-                        10 +
+                      (displayPosts?.length ?? 0) * 10 +
                       (followers?.length ?? 0) * 5 +
                       50
                     }
@@ -333,38 +311,32 @@ export function ProfilePage() {
           ) : (
             <>
               {/* Grid view */}
-              <div className="grid grid-cols-3 gap-2 mb-6">
-                {(displayPosts ?? SAMPLE_POSTS_BY_USER).map((post, i) => {
-                  const imgSrc =
-                    "image" in post &&
-                    typeof post.image === "object" &&
-                    post.image
-                      ? ((
-                          post.image as { getDirectURL(): string }
-                        ).getDirectURL?.() ?? (post as any).image)
-                      : ((post as any).image ??
-                        "/assets/generated/post-tokyo-night.dim_800x600.jpg");
-                  return (
-                    <button
-                      type="button"
-                      key={post.id.toString()}
-                      onClick={() => setShowPostModal(i)}
-                      className="aspect-square rounded-xl overflow-hidden group relative hover:opacity-90 transition-opacity"
-                    >
-                      <img
-                        src={imgSrc}
-                        alt={(post as any).caption ?? ""}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-background/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
-                    </button>
-                  );
-                })}
-              </div>
+              {(displayPosts ?? []).length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mb-6">
+                  {(displayPosts ?? []).map((post, i) => {
+                    const imgSrc = post.image.getDirectURL();
+                    return (
+                      <button
+                        type="button"
+                        key={post.id.toString()}
+                        onClick={() => setShowPostModal(i)}
+                        className="aspect-square rounded-xl overflow-hidden group relative hover:opacity-90 transition-opacity"
+                      >
+                        <img
+                          src={imgSrc}
+                          alt={post.caption}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-background/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Empty state */}
-              {!displayPosts && (
+              {(!displayPosts || displayPosts.length === 0) && (
                 <div
                   data-ocid="profile.empty_state"
                   className="glass rounded-2xl p-10 text-center border border-border/40"

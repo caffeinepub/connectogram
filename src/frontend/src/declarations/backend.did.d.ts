@@ -112,6 +112,7 @@ export interface _SERVICE {
   'followUser' : ActorMethod<[Principal], undefined>,
   'getActiveStories' : ActorMethod<[Principal], Array<Story>>,
   'getAllStories' : ActorMethod<[], Array<Story>>,
+  'getAllUsers' : ActorMethod<[], Array<User>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getComments' : ActorMethod<[bigint], Array<Comment>>,
@@ -137,6 +138,7 @@ export interface _SERVICE {
     undefined
   >,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'searchUsers' : ActorMethod<[string], Array<User>>,
   'sendMessage' : ActorMethod<[Principal, string], undefined>,
   'unfollowUser' : ActorMethod<[Principal], undefined>,
   'unlikePost' : ActorMethod<[bigint], undefined>,

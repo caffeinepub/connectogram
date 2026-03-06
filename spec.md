@@ -1,39 +1,45 @@
 # Connectogram
 
 ## Current State
-- Full social media app with posts, feed, explore, profiles, messaging, notifications
-- PostCard shows like counts initialized with `Math.random()` (fake random numbers), not real data
-- StoriesRow uses a hardcoded `SAMPLE_STORIES` array with fake users -- no real backend integration
-- Backend has `likePost`/`unlikePost` but no `getLikeCount` or `getPostLikes` query
-- Stories backend exists (`createStory`, `getActiveStories`) but is not wired to the UI
-- "Add Story" button in StoriesRow does nothing
+- Backend has full user, post, story, messaging, follow, like, comment, notification system in Motoko
+- `sendMessage`, `getMessages`, `getConversations` endpoints exist and are functional
+- `getUser`, `getUserProfile` endpoints exist for fetching individual users
+- No `getAllUsers` or `searchUsers` endpoint exists
+- Frontend MessagesPage has hardcoded DEMO_CONVERSATIONS and DEMO_MESSAGES arrays with fake users (sofia.art, alex.dev, maya.web3)
+- Frontend MessagesPage falls back to demo conversations/messages when real backend data is empty
+- Frontend FeedPage has SAMPLE_POSTS with hardcoded dummy creator principals
+- Frontend ExplorePage has SAMPLE_EXPLORE_POSTS with dummy creators and local image paths
+- Frontend ExplorePage search only filters posts by caption/hashtag, no user search
+- Frontend ProfilePage has SAMPLE_POSTS_BY_USER fallback data
 
 ## Requested Changes (Diff)
 
 ### Add
-- `getLikeCount(postId)` query to Motoko backend returning real like count per post
-- `getPostLikes(postId)` query returning Set of principals who liked (to check if caller liked it)
-- Story creation flow: clicking "Your Story" opens a dialog to upload an image + optional text, then calls `createStory`
-- Story viewing: fetch real stories from all users the current user follows; show their story bubbles
-- `useGetLikeCount` hook in useQueries.ts
-- `useGetAllStories` hook to fetch stories for feed (from all registered users, or a public endpoint)
+- Backend: `getAllUsers()` query returning all registered User records
+- Backend: `searchUsers(query: Text)` query returning users whose username contains the query string (case-insensitive)
+- Frontend hook: `useGetAllUsers()` and `useSearchUsers(query)`
+- Frontend ExplorePage: "People" search tab that searches real users by username; shows user cards with avatar, username, bio, and a "Message" button that navigates to that user's conversation
+- Frontend MessagesPage: "New Message" button to start a conversation with any registered user (search by username)
 
 ### Modify
-- `PostCard`: replace `Math.random()` initial like count with real data fetched from `getLikeCount`
-- `PostCard`: initialize `liked` state based on whether caller's principal is in post's likes set
-- `StoriesRow`: remove `SAMPLE_STORIES` hardcoded data; wire to real backend stories
-- `StoriesRow`: "Your Story" button opens story creation modal
-- Motoko: add `getLikeCount` and `getPostLikes` public query functions
-- Motoko: add `getAllStories` public query that returns all active stories across all users
+- Frontend MessagesPage: Remove DEMO_CONVERSATIONS and DEMO_MESSAGES constants entirely; show only real on-chain conversations; fetch and display actual usernames/avatars from backend for each conversation partner; show empty state when no conversations exist
+- Frontend FeedPage: Remove SAMPLE_POSTS fallback; show empty state when no posts exist
+- Frontend ExplorePage: Remove SAMPLE_EXPLORE_POSTS and SAMPLE_HASHTAGS fallbacks; show only real posts and real trending hashtags; user search integrated into explore search bar (toggle between Posts and People tabs)
+- Frontend ProfilePage: Remove SAMPLE_POSTS_BY_USER fallback; show real empty state
 
 ### Remove
-- `Math.random()` fake like count initialization in PostCard
-- Hardcoded `SAMPLE_STORIES` array in StoriesRow
+- DEMO_CONVERSATIONS array in MessagesPage
+- DEMO_MESSAGES function in MessagesPage
+- SAMPLE_POSTS in FeedPage
+- SAMPLE_EXPLORE_POSTS and SAMPLE_HASHTAGS in ExplorePage
+- SAMPLE_POSTS_BY_USER in ProfilePage
 
 ## Implementation Plan
-1. Update `main.mo` to add `getLikeCount(postId)`, `getPostLikes(postId)`, and `getAllStories()` query functions
-2. Regenerate `backend.d.ts` bindings
-3. Add `useGetLikeCount`, `useGetPostLikes`, `useGetAllStories` hooks to `useQueries.ts`
-4. Update `PostCard` to use real like count and liked state from backend
-5. Rebuild `StoriesRow` to: fetch all active stories, render real user bubbles, add story creation modal
-6. Validate and deploy
+1. Add `getAllUsers()` and `searchUsers(query)` Motoko endpoints
+2. Update backend.d.ts to include new methods
+3. Add `useGetAllUsers` and `useSearchUsers` hooks in useQueries.ts
+4. Remove DEMO_CONVERSATIONS, DEMO_MESSAGES from MessagesPage; wire to real backend only; add "New Message" dialog with user search
+5. Add conversation partner name/avatar resolution using real user profiles
+6. Remove SAMPLE_POSTS from FeedPage; show true empty state
+7. Refactor ExplorePage to add People/Posts tabs in search; remove SAMPLE_EXPLORE_POSTS; user search calls searchUsers API
+8. Remove SAMPLE_POSTS_BY_USER from ProfilePage

@@ -573,4 +573,17 @@ actor {
     ).toArray();
     validStories.sort(Story.compareByNewestFirst);
   };
+
+  // NEW ENDPOINT: Get all users
+  public query ({ caller }) func getAllUsers() : async [User] {
+    users.values().toArray();
+  };
+
+  // NEW ENDPOINT: Search users by username
+  public query ({ caller }) func searchUsers(search : Text) : async [User] {
+    let lowerSearch = search.toLower();
+    let filteredUsers = users.values().filter(func(user) { user.username.toLower().contains(#text(lowerSearch)) });
+    filteredUsers.toArray();
+  };
 };
+

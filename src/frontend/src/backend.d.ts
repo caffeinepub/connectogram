@@ -83,6 +83,7 @@ export interface backendInterface {
     followUser(user: Principal): Promise<void>;
     getActiveStories(user: Principal): Promise<Array<Story>>;
     getAllStories(): Promise<Array<Story>>;
+    getAllUsers(): Promise<Array<User>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getComments(postId: bigint): Promise<Array<Comment>>;
@@ -105,6 +106,7 @@ export interface backendInterface {
     markNotificationsRead(): Promise<void>;
     registerUser(username: string, bio: string, profilePicture: ExternalBlob | null): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    searchUsers(search: string): Promise<Array<User>>;
     sendMessage(recipient: Principal, content: string): Promise<void>;
     unfollowUser(user: Principal): Promise<void>;
     unlikePost(postId: bigint): Promise<void>;
